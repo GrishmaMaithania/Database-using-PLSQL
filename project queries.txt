@@ -1,0 +1,115 @@
+create table Acc_details(User_id,account_status)
+as select User_id,account_status from Authentication;
+
+SELECT
+ extract(YEAR from account_created_date) as acc_created_year
+from Authentication;
+
+SELECT sector_name
+FROM Sector
+WHERE sector_market_cap = (SELECT MAX(sector_market_cap) FROM Sector);
+
+select Sector.sector_name,Sector.sector_name,stock.stock_id,stock.current_price
+from Sector
+full outer join stock
+on Sector.sector_id=stock.sector_id;
+
+
+SELECT user_id, SUM(price) AS total_price
+FROM Transaction
+WHERE quantity > 500 AND stock_id IN ('A3F7', 'CH34', 'ZA4G')
+GROUP BY user_id;
+
+SELECT SUM(current_price * Total_share) AS TotalStockValue FROM Stock;
+
+update Portfolio
+set ProfitLoss=3
+where user_id=4001;
+
+select * from USER_D;
+select * from USER_E;
+select * from Authentication;
+select * from Portfolio;
+select * from companies;
+select * from stock;
+select * from Sector;
+select * from Transaction;
+
+Create a procedure that allows users to purchase stocks. It should update the Portfolio table with the new purchase information
+
+CREATE OR REPLACE PROCEDURE PurchaseStock(
+    user_id IN NUMBER,
+    comp_id IN NUMBER,
+    quantity IN NUMBER,
+    p_id in varchar2
+)
+IS
+    stock_price NUMBER;
+    purchase_amount NUMBER;
+     
+    
+BEGIN
+    
+    SELECT current_price INTO stock_price
+    FROM stock
+    WHERE company_id = comp_id;
+
+    purchase_amount := stock_price * quantity;
+
+         
+    INSERT INTO Portfolio(Portfolio_id,User_id,PurchaseDate, PurchasePrice,QuantityOwned)
+    VALUES(p_id,user_id, SYSDATE, stock_price, quantity);
+
+
+END;
+/
+
+begin
+PurchaseStock(4001,5001,3,'Mansi@123');
+end;
+/
+
+
+
+
+
+CREATE OR REPLACE TRIGGER TransactionMessageTrigger
+AFTER INSERT ON Transaction
+FOR EACH ROW
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Transaction ID ' || :NEW.Transaction_id || ' has been inserted.');
+    DBMS_OUTPUT.PUT_LINE('User ID: ' || :NEW.User_id);
+    DBMS_OUTPUT.PUT_LINE('Transaction Type: ' || :NEW.transaction_type);
+    DBMS_OUTPUT.PUT_LINE('Quantity: ' || :NEW.quantity);
+    DBMS_OUTPUT.PUT_LINE('Price: ' || :NEW.price);
+    -- You can add more information or customize the message as needed.
+END;
+/
+
+INSERT INTO Transaction VALUES(8006,4005,'CH34','Trading',600,50000);
+
+
+
+
+
+
+CREATE OR REPLACE FUNCTION LatestStockPrice(
+    p_company_id IN NUMBER
+)
+RETURN NUMBER
+IS
+    v_stock_price NUMBER;
+BEGIN
+    
+    SELECT current_price
+    INTO v_stock_price
+    FROM Stock
+    WHERE company_id = p_company_id
+    ORDER BY current_price DESC -- Assuming the latest price is the highest value
+    FETCH FIRST 1 ROW ONLY;
+
+    RETURN v_stock_price;
+
+END;
+/
+

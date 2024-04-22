@@ -1,0 +1,177 @@
+Create table Authentication
+(
+Password Varchar2(15) PRIMARY KEY,
+User_id number(4) ,
+account_created_date date NOT NULL,
+last_password_change Varchar2 (30) NOT NULL,
+account_status Varchar2 (30),
+Last_login Varchar2 (30),
+FOREIGN KEY (User_id) REFERENCES USER_D(User_id) 
+);
+
+insert into Authentication
+values(Mansi@123,4001,12-JUN-05,mansi,active,1-September-2023);
+insert into Authentication
+values(Anil@010,4003,04-JUN-09,A010,not-active,2-October-2023);
+insert into Authentication
+values(Pihu@098,4002,14-FEB-09,98pihu,active,23-September-2023);
+insert into Authentication
+values(Seema@349,4004,09-MAY-12,SEEMA,active,16-December-2022);
+insert into Authentication
+values(Rishab@108,4005,21-JAN-21,Rishab108,active,12-July-2023);
+
+
+
+create table USER_D(
+User_id number(4) PRIMARY KEY,
+Password varchar2(15)NOT NULL ,
+Name varchar2(50)NOT NULL,
+Registration_date date NOT NULL,
+Lastlogin_date date NOT NULL,
+Account_balance number(10,4)
+);
+
+alter table USER_D
+add foreign key (Password)
+references Authentication(Password);
+
+INSERT INTO USER_D VALUES(4001,'Mansi@123','Mansi Singh','12-Jan-2004','14-June-2020',20000);
+INSERT INTO USER_D VALUES(4002,'Pihu@098','Pihu Ray','24-July-2009','28-Feb-2022',12000);
+INSERT INTO USER_D VALUES(4003,'Anil@010','Anil sharma','3-Feb-2020','11-Sep-2020',25000);
+INSERT INTO USER_D VALUES(4004,'Seema@349','Seema Bhatt','17-Aug-2019','28-Feb-2022',42000);
+INSERT INTO USER_D VALUES(4005,'Rishab@108','Rishab Malhotra','1-May-2022','1-May-2023',1200);
+
+create table USER_E(
+User_id number(4),
+Email varchar2(100) NOT NULL,
+FOREIGN KEY (User_id) REFERENCES USER_D(User_id) 
+);
+
+INSERT INTO USER_E VALUES('4001','mansisingh29@gmail.com');
+INSERT INTO USER_E VALUES('4002','pihuray18@gmail.com');
+INSERT INTO USER_E VALUES('4003','anilsharma400@gmail.com');
+INSERT INTO USER_E VALUES('4004','seemabhatt98@gmail.com');
+INSERT INTO USER_E VALUES('4005','rishabmalhotra256@gmail.com');
+
+create table Portfolio
+(
+Portfolio_id	Varchar2	(15),		
+User_id	Number 	(4),		
+PurchaseDate	Varchar2	(30),		
+PurchasePrice	Varchar2	(30),		
+QuantityOwned 	number	(10),		
+ProfitLoss	Varchar2	(30),		
+TotalValue	varchar	(50),
+FOREIGN KEY (User_id) REFERENCES USER_D(User_id) 
+); 		
+
+alter table Portfolio
+modify QuantityOwned number(10,4);
+
+alter table Portfolio
+modify TotalValue varchar(50);
+
+
+Insert into Portfolio values('Mansi@123',4001,'21-June-2004',1000,3.5,2,'$2.5trillion');
+
+Insert into  Portfolio values('Pihu13',4002,'4-May-2009',2000,4.5,-2,'$1trillion');
+
+Insert into Portfolio values('Anil14',4003,'1-Feb-2012',3000,5.5,-3,'$2trillion');
+
+Insert into Portfolio values('Seema15',4004,'19-June-2021',4000,6.5,4,'$1.5trillion');
+
+Insert into  Portfolio values('Rishab16',4005,'14- June-2019',5000,7.5,-1,'$1trillion');
+
+create table Stock(
+stock_id varchar(4) PRIMARY KEY, 
+company_id number(5),
+sector_id number(10) ,
+current_price number(10,4)NOT NULL,
+Earnings_Pershare number(10,4) NOT NULL,
+Total_share number(10,4) NOT NULL
+);
+
+alter table Stock
+add foreign key (sector_id)
+references Sector(sector_id);
+
+alter table Stock
+add foreign key (company_id)
+references companies(company_id);
+
+INSERT INTO Stock values('A3F7',5001,9080,2366,290,20000);	
+INSERT INTO Stock values('EVG8',5002,9081,7366,790,30000);
+INSERT INTO Stock values('B6H1',5003,9082,9877,677,40000);
+INSERT INTO Stock values('ZA4G',5004,9083,1000,450,40000);
+INSERT INTO Stock values('CH34',5005,9084,1700,340,24000);
+
+create table Transaction
+(
+Transaction_id NUMBER(30) primary key,
+User_id number(4),
+stock_id varchar(4), 
+transaction_type varchar2(15) NOT NULL,
+quantity varchar2(15) NOT NULL,
+price varchar2(10) NOT NULL,
+FOREIGN KEY (User_id) REFERENCES USER_D(User_id),
+FOREIGN KEY (stock_id) REFERENCES Stock(stock_id)
+);
+
+INSERT INTO Transaction VALUES(8001,4001,'A3F7','Stock',500,10000);
+INSERT INTO Transaction VALUES(8002,4002,'EVG8','Derivatives',590,60000);
+INSERT INTO Transaction VALUES(8003,4003,'B6H1','Bond',940,80000);
+INSERT INTO Transaction VALUES(8004,4004,'ZA4G','Limit order',820,10000);
+INSERT INTO Transaction VALUES(8005,4005,'CH34','Trading',600,50000);
+
+create table companies
+(
+company_id number(5) PRIMARY KEY,
+company_name varchar(50) NOT NULL UNIQUE,
+sector_id Number(10),
+Comp_currentprice	Number 	(10,4),
+Com_totalshare	Number 	(10,4),
+ FOREIGN KEY (sector_id)REFERENCES sector(sector_id)
+);
+ 
+
+INSERT INTO companies values('5001','Nexus',9080,185900,485900);
+INSERT INTO companies values('5002','TURBO Z',9081,475193,716492);
+INSERT INTO companies values('5003','IBM',9083,748581,205817);
+INSERT INTO companies values('5004','Tech.US',9084,461838,691727);
+INSERT INTO companies values('5005','TCS',9082,739173,347121);
+
+create table Sector(
+sector_id number(10) PRIMARY KEY,
+sector_name varchar2(30) NOT NULL,
+sector_market_cap varchar(20)
+);
+
+alter table Sector
+modify sector_market_cap varchar(20);
+
+alter table Sector
+drop column stock_id;
+
+
+INSERT INTO Sector values(9080,'Real estate','186.8b');
+INSERT INTO Sector values(9081,'IT','103.9b');
+INSERT INTO Sector values(9082,'Finance','96b');
+INSERT INTO Sector values(9083,'Techology','249b');
+INSERT INTO Sector values(9084,'IT','943.8b');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
